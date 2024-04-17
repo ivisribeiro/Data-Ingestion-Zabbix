@@ -3,7 +3,6 @@ import json
 import pandas as pd
 from datetime import datetime, timedelta
 
-
 url = ""
 user = ""
 password = ""
@@ -73,14 +72,12 @@ def transform_inventory_to_dict(list_hosts):
         transformed_data_list.append(item)
     return transformed_data_list
 
-
 method = 'hostgroup.get'
 params = {
     'output': ['groupid', 'name', 'hosts'],
     "search": {"name": "META *"},
     "searchWildcardsEnabled": 'true',
     "selectHosts": ['hostid', 'host', 'description'] 
-
 }
 # Chamada à API do Zabbix para obter informações dos grupos de hosts
 host_groups = call_api(url, token, method, params)
@@ -99,20 +96,17 @@ for item in host_groups:
         rows.append(row)
 df_hostgroup = pd.DataFrame(rows)
 
-
 method = 'hostgroup.get'
 params = {
     'output': ['groupid', 'name', 'hosts'],
     "search": {"name": "META *"},
     "searchWildcardsEnabled": 'true',
     "selectHosts": ['hostid', 'host', 'description'] 
-
 }
 
 # Chamada à API do Zabbix para obter informações dos grupos de hosts
 lista_dicts = call_api(url, token, method, params)
 lista_host_group_id = list(map(lambda x: int(x['groupid']), lista_dicts))
-
 
 method = 'host.get'
 params = {
@@ -125,11 +119,6 @@ list_hosts = call_api(url, token, method, params)
 list_hosts_id = [item['hostid'] for item in list_hosts]
 df_hosts = pd.DataFrame(transform_inventory_to_dict(list_hosts))
 
-
-
 columns_to_keep = ['name', 'host', 'description', 'location', 'contact', 'os', 'type','hostid']
-
-
-# Realizar o join
 
 df_merged = pd.merge(df_hostgroup, df_hosts, on='hostid', how='inner')[columns_to_keep]
